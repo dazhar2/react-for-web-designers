@@ -3,8 +3,7 @@
 
   function SizeSelector(props) {
     function sizeOptions() {
-      var sizes = window.Inventory.allSizes;
-
+      
       return props.sizes.map(function(val) {
         return (
           <option value={val} key={val}>
@@ -39,11 +38,16 @@
         );
       });
     }
+    
+    function onColorChange(evt) {
+      props.handleColorChange(evt.target.value);
+    }
+
 
     return (
       <div className="field-group">
         <label htmlFor="color-options">Color:</label>
-        <select defaultValue={props.color} name="colorOptions" id="color-options">
+        <select defaultValue={props.color} name="colorOptions" id="color-options" onChange={onColorChange}>
           {colorOptions()}
         </select>
       </div>
@@ -71,8 +75,26 @@
       var availableColors = window.Inventory.bySize[selectedSize];
 
       this.setState({
-        colors: availableColors
+        colors: availableColors,
+        size: selectedSize
       });
+
+      if (availableColors.indexOf(this.state.color) === -1) {
+        this.setState({ color: availableColors[0] });
+      }
+    },
+
+    handleColorChange: function(selectedColor) {
+      var availableSizes = window.Inventory.byColor[selectedColor];
+
+      this.setState({
+        sizes: availableSizes,
+        color: selectedColor
+      });
+
+      if (availableSizes.indexOf(this.state.size) === -1) {
+        this.setState({ size: availableSizes[0] });
+      }
     },
 
     render: function() {
@@ -84,7 +106,8 @@
           <div className="selectors">
             <SizeSelector size={this.state.size} sizes={this.state.sizes} 
                 handleSizeChange={this.handleSizeChange} />
-            <ColorSelector color={this.state.color} colors={this.state.colors} />
+            <ColorSelector color={this.state.color} colors={this.state.colors}               
+                handleColorChange={this.handleColorChange} />
           </div>
         </div>
       );
